@@ -1,0 +1,66 @@
+# Environment variables
+.env
+
+# First run marker
+.first-run-complete
+
+# Datasets
+datasets/
+data/
+*.zip
+
+# Model weights
+weights/
+runs/
+*.pt
+*.pth
+!yolov10*.pt
+
+# Sample outputs (keep directory but ignore images)
+samples/*.jpg
+samples/*.png
+samples/*.jpeg
+samples/*.mp4
+samples/*.avi
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Jupyter Notebook
+.ipynb_checkpoints

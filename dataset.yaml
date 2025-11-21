@@ -1,0 +1,12 @@
+# YOLOv10 Dataset Configuration for COCO Person
+# Dataset paths
+path: ./datasets/coco_person  # dataset root dir
+train: images/train  # train images (relative to 'path')
+val: images/val  # val images (relative to 'path')
+
+# Classes
+names:
+  0: person
+
+# Number of classes
+nc: 1
