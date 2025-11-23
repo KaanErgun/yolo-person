@@ -10,31 +10,58 @@ import argparse
 
 
 def download_file(url, destination):
-    """Download a file with progress bar"""
+    """Download a file with progress bar and resume support"""
     print(f"Downloading {url}...")
-    response = requests.get(url, stream=True)
-    total_size = int(response.headers.get('content-length', 0))
     
     os.makedirs(os.path.dirname(destination), exist_ok=True)
     
-    with open(destination, 'wb') as file, tqdm(
+    # Check if partial file exists
+    resume_byte_pos = 0
+    if os.path.exists(destination):
+        resume_byte_pos = os.path.getsize(destination)
+        print(f"Resuming download from byte {resume_byte_pos}")
+    
+    headers = {}
+    if resume_byte_pos:
+        headers['Range'] = f'bytes={resume_byte_pos}-'
+    
+    response = requests.get(url, stream=True, headers=headers, timeout=30)
+    total_size = int(response.headers.get('content-length', 0)) + resume_byte_pos
+    
+    mode = 'ab' if resume_byte_pos else 'wb'
+    
+    with open(destination, mode) as file, tqdm(
         desc=os.path.basename(destination),
         total=total_size,
+        initial=resume_byte_pos,
         unit='iB',
         unit_scale=True,
         unit_divisor=1024,
     ) as progress_bar:
-        for data in response.iter_content(chunk_size=1024):
+        for data in response.iter_content(chunk_size=8192):
             size = file.write(data)
             progress_bar.update(size)
 
 
 def extract_zip(zip_path, extract_to):
-    """Extract a zip file"""
-    print(f"Extracting {zip_path}...")
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(extract_to)
-    print(f"Extraction complete!")
+    """Extract a zip file with validation"""
+    print(f"Validating {zip_path}...")
+    try:
+        # Validate zip file first
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            # Test the zip file
+            bad_file = zip_ref.testzip()
+            if bad_file:
+                raise zipfile.BadZipFile(f"Corrupted file in zip: {bad_file}")
+            
+            print(f"Extracting {zip_path}...")
+            zip_ref.extractall(extract_to)
+        print(f"Extraction complete!")
+    except zipfile.BadZipFile as e:
+        print(f"❌ Error: {e}")
+        print(f"Removing corrupted file: {zip_path}")
+        os.remove(zip_path)
+        raise Exception("Zip file is corrupted. Please run the script again to re-download.")
 
 
 def download_coco_dataset(data_dir='./data/coco', download_images=True, download_annotations=True):

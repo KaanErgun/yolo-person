@@ -65,6 +65,7 @@ def train_yolov10():
         cache=cfg.CACHE,
         amp=cfg.AMP,
         close_mosaic=cfg.CLOSE_MOSAIC,
+        rect=True,  # Rectangular training for faster validation
         # Optimization settings
         optimizer=cfg.OPTIMIZER,
         lr0=cfg.LEARNING_RATE,
