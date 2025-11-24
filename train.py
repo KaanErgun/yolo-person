@@ -61,6 +61,7 @@ def train_yolov10():
         save_period=cfg.SAVE_PERIOD,
         workers=cfg.WORKERS,
         exist_ok=True,
+        resume=cfg.RESUME,
         pretrained=cfg.USE_PRETRAINED,
         cache=cfg.CACHE,
         amp=cfg.AMP,
